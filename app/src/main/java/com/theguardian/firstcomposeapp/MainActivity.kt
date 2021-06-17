@@ -3,63 +3,111 @@ package com.theguardian.firstcomposeapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val data = NewsFront(
+            children = listOf(
+                ArticleGroup(
+                    title = "Headlines",
+                    articles = listOf(Article(
+                        title = "Orchid thought to be extinct in UK found on roof of London bank",
+                        byline = "Rhi Storer",
+                        date = "Thu 17 Jun 2021 12.49 BST"
+                    ))
+                ),
+                Thrasher(message = "Thrashers are named after Steven Thrasher")
+            )
+        )
         setContent {
-            NewsStory()
+            MaterialTheme {
+                FrontView(data)
+            }
         }
     }
 }
 
 @Composable
-fun NewsStory() {
-    MaterialTheme {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.rooftoporchid),
-                contentDescription = "A photograph taken from the roof of an office building somewhere in central London, UK. In the background the city skyline is visible, in the foreground rooftop solar panels are surrounded by grass and other messy plants.",
-                modifier = Modifier
-                    .height(180.dp)
-                    .fillMaxWidth()
-                    .clip(shape = RoundedCornerShape(4.dp)),
-                contentScale = ContentScale.Crop
-
-            )
-            Spacer(Modifier.height(16.dp))
-            Text(
-                "Orchid thought to be extinct in UK found on roof of London bank",
-                style = MaterialTheme.typography.h6
-            )
-            Text(
-                "Rhi Storer",
-                style = MaterialTheme.typography.body2
-            )
-            Text(
-                "Thu 17 Jun 2021 12.49 BST",
-                style = MaterialTheme.typography.body2
-            )
+fun FrontView(front: NewsFront) {
+    Column(modifier = Modifier.padding(top = 16.dp)) {
+        front.children.forEach {
+            when(it) {
+                is ArticleGroup -> ArticleGroupView(it)
+                is Thrasher -> ThrasherView(it)
+            }
         }
+    }
+}
+
+@Composable
+fun ArticleGroupView(articleGroup: ArticleGroup) {
+    Column {
+        ArticleGroupHeading(title = articleGroup.title)
+        articleGroup.articles.forEach {
+            ArticleCard(it)
+        }
+    }
+}
+
+@Composable
+fun ArticleCard(article: Article) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(article.title, style = MaterialTheme.typography.h6)
+        Text(article.byline, style = MaterialTheme.typography.body2)
+        Text(article.date, style = MaterialTheme.typography.body2)
     }
 }
 
 @Preview
 @Composable
-fun DefaultPreview() {
-    NewsStory()
+fun NewsArticleCardPreview() {
+    ArticleCard(
+        Article(
+            title = "Orchid thought to be extinct in UK found on roof of London bank",
+            byline = "Rhi Storer",
+            date = "Thu 17 Jun 2021 12.49 BST"
+        )
+    )
+}
+
+@Composable
+fun ArticleGroupHeading(title: String) {
+    Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+        Divider()
+        Text(text = title, style = MaterialTheme.typography.h4)
+    }
+}
+
+@Preview
+@Composable
+fun ArticleGroupHeadingPreview() {
+    ArticleGroupHeading(title = "Headlines")
+}
+
+@Composable
+fun ThrasherView(thrasher: Thrasher) {
+    Surface(color = Color.Yellow) {
+        Text(
+            text = thrasher.message,
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.h5
+        )
+    }
+}
+
+@Preview
+@Composable
+fun ThrasherViewPreview() {
+    ThrasherView(thrasher = Thrasher("Hello world!"))
 }
