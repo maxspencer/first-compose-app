@@ -20,30 +20,27 @@ import androidx.navigation.compose.rememberNavController
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val root = column {
-            p("Headlines")
-            row {
-                column {
-                    h("Title 1")
-                    p("Byline 1")
-                    button {
-                        p("Read")
-                    }
-                }
-                column {
-                    h("Title 2")
-                    p("Byline 2")
-                    button {
-                        p("Read")
-                    }
-                }
-            }
-        }
         setContent {
             MaterialTheme {
                 val navController = rememberNavController()
-                NavHost(navController, startDestination = "root") {
-                    composable("root") { ElementComponent(root) }
+                NavHost(navController, startDestination = "headlines") {
+                    routes.forEach { (route, func) ->
+                        composable(route) { entry ->
+                            ElementComponent(element = func(entry), navController = navController)
+                        }
+                    }
+                    /*
+                    composable("headlines") {
+                        ElementComponent(headlines, navController)
+                    }
+                    composable("articles/{articleId}") { entry ->
+                        ElementComponent(
+                            articles[entry.arguments?.getString("articleId")]!!,
+                            navController
+                        )
+                    }
+
+                     */
                 }
             }
         }
