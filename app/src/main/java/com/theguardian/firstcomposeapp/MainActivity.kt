@@ -13,30 +13,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val data = NewsFront(
-            children = listOf(
-                ArticleGroup(
-                    title = "Headlines",
-                    articles = listOf(Article(
-                        title = "Orchid thought to be extinct in UK found on roof of London bank",
-                        byline = "Rhi Storer",
-                        date = "Thu 17 Jun 2021 12.49 BST"
-                    ))
-                ),
-                Thrasher(message = "Thrashers are named after Steven Thrasher")
-            )
-        )
+        val root = column {
+            p("Headlines")
+            row {
+                column {
+                    h("Title 1")
+                    p("Byline 1")
+                    button {
+                        p("Read")
+                    }
+                }
+                column {
+                    h("Title 2")
+                    p("Byline 2")
+                    button {
+                        p("Read")
+                    }
+                }
+            }
+        }
         setContent {
             MaterialTheme {
-                FrontView(data)
+                val navController = rememberNavController()
+                NavHost(navController, startDestination = "root") {
+                    composable("root") { ElementComponent(root) }
+                }
             }
         }
     }
 }
+
+
 
 @Composable
 fun FrontView(front: NewsFront) {
